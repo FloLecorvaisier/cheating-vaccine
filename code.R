@@ -35,7 +35,7 @@ ggplot(df) +
     color = bquote("Vaccine efficacy ("*η*")"),
     x = bquote("Public good production ("*q[1]*")"), 
     y = bquote("Fitness ("*W[1]*")"))+ 
-  coord_cartesian(ylim = c(0, .4)) +
+  coord_cartesian(ylim = c(0, 0.4)) +
   theme_bw(base_family = "serif") +
   theme(legend.position = "bottom", axis.text.x = element_text(angle = 45, hjust = 1))
 
@@ -284,12 +284,12 @@ ggplot(df) +
 
 lambda = 0.1
 eta = 0.2
-g = .05
+g = 0.05
 alpha = 0.5
 
 df = expand.grid(
-  q3.1 = seq(0, 1 - g, length.out = 501), 
-  q3.2 = seq(0, 1 - g, length.out = 501)
+  q3.1 = seq(0, 1 - g, length.out = 1001), 
+  q3.2 = seq(0, 1 - g, length.out = 1001)
 )
 
 W3.1 = (1 - df$q3.1 - g) * ((1 - eta) * df$q3.1 + g) ** alpha
@@ -301,13 +301,13 @@ xstar = ((1 - df$q3.2 - g) ** (1 / alpha) * ((1 - eta) * df$q3.2 + g) -
   (1 - df$q3.1 - g) ** (1 / alpha) * ((1 - eta) * ((1 - lambda) * df$q3.1 + lambda * df$q3.2) + g)) /
   (lambda *(1 - eta)*((1 - df$q3.1 - g) ** (1 / alpha) - (1 - df$q3.2 - g) ** (1 / alpha)) * (df$q3.1 - df$q3.2))
 
-xstar[xstar < 0] = 0
-xstar[xstar > 1] = 1
+xstar[xstar < 0] = -0.01
+xstar[xstar > 1] = 1.01
 xstar[xstar < 1 & xstar > 0] = 0.5
 xstar[is.nan(xstar)] = 0
 
 ggplot(df) +
-  geom_tile(aes(x = q3.1, y = q3.2, fill = as.factor(xstar)), show.legend = F) +
+  geom_contour_filled(aes(x = q3.1, y = q3.2, z = xstar), show.legend = F) +
   labs(
     x = bquote("Resident public good production ("*q[3.1]*")"),
     y = bquote("Mutant public good production ("*q[3.2]*")")
